@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { db } from './firebaseConfig'; // Import your Firestore database instance
+import { collection, addDoc } from 'firebase/firestore'; // Import Firestore methods
 import './AddEmployee.css';
 
 function AddEmployee({ navigate }) {
@@ -10,8 +12,7 @@ function AddEmployee({ navigate }) {
   const [email, setEmail] = useState(''); // Employee's email address
   const [idNumber, setIdNumber] = useState(''); // Employee's ID number
   const [phoneNumber, setPhoneNumber] = useState(''); // Employee's phone number
-  // eslint-disable-next-line no-unused-vars
-  const [imageFile, setImageFile] = useState(null); // File object for the image, currently not used
+  const [imageFile, setImageFile] = useState(null); // File object for the image
 
   // Function to handle image file selection and preview
   const handleImageChange = (event) => {
@@ -20,14 +21,14 @@ function AddEmployee({ navigate }) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result); // Set the image URL for preview
-        setImageFile(file); // Store the file object (not used in current code)
+        setImageFile(file); // Store the file object
       };
       reader.readAsDataURL(file); // Read the file as a data URL
     }
   };
 
   // Function to handle the submission of the new employee
-  const handleAddEmployee = () => {
+  const handleAddEmployee = async () => {
     // Validate ID number length
     if (idNumber.length > 13) {
       alert('ID number must not exceed 13 digits');
@@ -42,7 +43,6 @@ function AddEmployee({ navigate }) {
 
     // Create a new employee object with current state values
     const newEmployee = {
-      id: Date.now(), // Generate a unique ID using current timestamp
       name,
       position,
       image,
@@ -52,15 +52,15 @@ function AddEmployee({ navigate }) {
       phoneNumber,
     };
 
-    // Retrieve the existing employees from local storage
-    const storedEmployees = JSON.parse(localStorage.getItem('employees')) || [];
-    // Add the new employee to the existing list
-    const updatedEmployees = [...storedEmployees, newEmployee];
-    // Save the updated employee list back to local storage
-    localStorage.setItem('employees', JSON.stringify(updatedEmployees));
-
-    // Navigate back to the active employees page
-    navigate('active-employees');
+    try {
+      // Add a new document in Firestore under the 'employees' collection
+      await addDoc(collection(db, 'employees'), newEmployee);
+      // Navigate back to the active employees page
+      navigate('active-employees');
+    } catch (error) {
+      console.error('Error adding employee: ', error);
+      alert('Error adding employee, please try again.');
+    }
   };
 
   // Function to handle navigation back to the active employees page

@@ -1,37 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Login.css';
+import { auth } from './firebaseConfig'; // Ensure the path is correct
+import { signInWithEmailAndPassword } from 'firebase/auth'; // Import Firebase authentication methods
 
 function Login({ navigate }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = async () => {
+    if (username === 'elizabeth.ndzukule@gmail.com' && password === '000000') {
+      try {
+        // Use Firebase to sign in
+        await signInWithEmailAndPassword(auth, username, password);
+        navigate('active-employees'); // Navigate to the active employees page
+      } catch (error) {
+        setError('Login failed. Please try again later.');
+        console.error('Error during login:', error.message);
+      }
+    } else {
+      setError('Invalid username or password');
+    }
+  };
+
   return (
     <div className="login">
-      {/* Button to navigate to the admin page */}
-      <button
-        className="admin-link"
-        onClick={() => navigate('admin')}
-      >
-        Admin
-      </button>
-      
-      {/* Main header for the login page */}
       <h1>Teekga Electrical (Pty) LTD</h1>
-
-      {/* Input field for entering the username */}
-      <input type="text" placeholder="User name" />
-
-      {/* Input field for entering the password */}
-      <input type="password" placeholder="Password" />
-
-      {/* Button to submit the login form and navigate to the active employees page */}
-      <button onClick={() => navigate('active-employees')}>Login</button>
-
-      {/* Container for additional links */}
+      <input 
+        type="email" 
+        placeholder="User name" 
+        value={username}
+        onChange={(e) => setUsername(e.target.value)} 
+        required 
+      />
+      <input 
+        type="password" 
+        placeholder="Password" 
+        value={password}
+        onChange={(e) => setPassword(e.target.value)} 
+        required 
+      />
+      <button onClick={handleLogin}>Login</button>
+      
       <div className="links">
-        {/* Button to navigate to the change password page */}
         <button onClick={() => navigate('change-password')}>Change password?</button>
-        
-        {/* Button to navigate to the forgot password page */}
         <button onClick={() => navigate('forgot-password')}>Forgot password?</button>
       </div>
+
+      {error && <p className="error">{error}</p>}
     </div>
   );
 }
