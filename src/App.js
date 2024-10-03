@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import Login from './Login';
-import ChangePassword from './ChangePassword'; 
-import ForgotPassword from './ForgotPassword';
 import Admin from './Admin'; // Replaced Signup with Admin
 import ActiveEmployees from './ActiveEmployees';
 import AddEmployee from './AddEmployee';
 import EditProfile from './EditProfile';
 import Personnel from './Personnel';
 import Delete from './Delete';
-import Search from './Search';
 import Logout from './Logout';
 import Loader from './Loader'; 
 import './App.css';
@@ -47,12 +44,6 @@ function App() {
         return <Personnel navigate={navigate} />;
       case 'delete':
         return <Delete navigate={navigate} isAdmin={isAdmin} loginAsAdmin={loginAsAdmin} />;
-      case 'search':
-        return <Search navigate={navigate} />;
-      case 'change-password':
-        return <ChangePassword navigate={navigate} />;
-      case 'forgot-password':
-        return <ForgotPassword navigate={navigate} />;
       case 'logout':
         return <Logout navigate={navigate} />;
       default:

@@ -1,44 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import './Delete.css';
-
-// Initial data for employees
-const initialEmployees = [
-  { id: 1, name: 'Mpilo Mnaka', position: 'Manager', refNumber: 'EMP001' },
-  { id: 2, name: 'Jane Smith', position: 'Sales Representative', refNumber: 'EMP002' },
-  { id: 3, name: 'Amelia Johnson', position: 'Technician', refNumber: 'EMP003' },
-  { id: 4, name: 'Tomas Dali', position: 'Cashier', refNumber: 'EMP004' },
-  { id: 5, name: 'Michael Brown', position: 'Electrician', refNumber: 'EMP005' },
-  { id: 6, name: 'Linda Witsona', position: 'Customer Service', refNumber: 'EMP006' },
-  { id: 7, name: 'David Leetso', position: 'Stock Manager', refNumber: 'EMP007' },
-  { id: 8, name: 'Andrew Majola', position: 'Accountant', refNumber: 'EMP008' },
-  { id: 9, name: 'James Mohammad', position: 'Security', refNumber: 'EMP009' },
-  { id: 10, name: 'Patricia Nukeri', position: 'Cleaner', refNumber: 'EMP010' },
-  { id: 11, name: 'Munny Mpapi', position: 'Marketing Director', refNumber: 'EMP011' },
-  { id: 12, name: 'Palane Pilot', position: 'Web Designer', refNumber: 'EMP012' },
-  { id: 13, name: 'Tebogo Zwane', position: 'Frontend Developer', refNumber: 'EMP013' },
-  { id: 14, name: 'Ntombi Mkhize', position: 'Sales Representative', refNumber: 'EMP014' },
-  { id: 15, name: 'James Tlou', position: 'Software Engineer', refNumber: 'EMP015' },
-  { id: 16, name: 'Emily Ngwenya', position: 'HR Manager', refNumber: 'EMP016' },
-  { id: 17, name: 'Peter Molefe', position: 'Accountant', refNumber: 'EMP017' },
-  { id: 18, name: 'Sarah Lethabo', position: 'Customer Support', refNumber: 'EMP018' },
-  { id: 19, name: 'Michael Ndlovu', position: 'Security', refNumber: 'EMP019' },
-  { id: 20, name: 'Anna Nkosi', position: 'Technician', refNumber: 'EMP020' },
-  { id: 21, name: 'Elizabeth Ndzukule', position: 'Admin', refNumber: 'EMP021' }
-];
+import { db } from './firebaseConfig'; // Ensure the path to your firebase config is correct
+import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 
 function Delete({ navigate, isAdmin, loginAsAdmin }) {
-  // Load employees from local storage or use initial data
-  const [employees, setEmployees] = useState(() => {
-    const savedEmployees = localStorage.getItem('employees');
-    return savedEmployees ? JSON.parse(savedEmployees) : initialEmployees;
-  });
-
+  const [employees, setEmployees] = useState([]);
   const [adminName, setAdminName] = useState('');
 
-  // Save employees to local storage whenever they change
+  // Fetch employees from Firestore
   useEffect(() => {
-    localStorage.setItem('employees', JSON.stringify(employees));
-  }, [employees]);
+    const fetchEmployees = async () => {
+      const employeesCollection = collection(db, 'employees'); // Adjust the collection name
+      const employeeSnapshot = await getDocs(employeesCollection);
+      const employeeList = employeeSnapshot.docs.map(doc => ({
+        id: doc.id, // Use Firestore document ID
+        ...doc.data(),
+      }));
+      setEmployees(employeeList);
+    };
+
+    fetchEmployees();
+  }, []);
 
   const handleLogin = () => {
     if (adminName.toLowerCase() === 'elizabeth ndzukule') {
@@ -64,10 +46,15 @@ function Delete({ navigate, isAdmin, loginAsAdmin }) {
     );
   }
 
-  const handleDelete = (employeeId) => {
-    const updatedEmployees = employees.filter(employee => employee.id !== employeeId);
-    setEmployees(updatedEmployees);
-    alert(`Employee with ID ${employeeId} has been deleted.`);
+  const handleDelete = async (employeeId) => {
+    try {
+      await deleteDoc(doc(db, 'employees', employeeId)); // Delete employee from Firestore
+      setEmployees(employees.filter(employee => employee.id !== employeeId));
+      alert(`Employee with ID ${employeeId} has been deleted.`);
+    } catch (error) {
+      console.error('Error deleting employee:', error);
+      alert('Failed to delete employee. Please try again later.');
+    }
   };
 
   return (
@@ -76,6 +63,7 @@ function Delete({ navigate, isAdmin, loginAsAdmin }) {
       <div className="employee-list">
         {employees.map(employee => (
           <div key={employee.id} className="employee-card">
+            <img src={employee.imageUrl} alt={employee.name} /> {/* Assuming you have an image URL in the employee data */}
             <h3>{employee.name}</h3>
             <p>{employee.position}</p>
             <p>{employee.refNumber}</p>

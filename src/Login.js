@@ -41,11 +41,6 @@ function Login({ navigate }) {
         required 
       />
       <button onClick={handleLogin}>Login</button>
-      
-      <div className="links">
-        <button onClick={() => navigate('change-password')}>Change password?</button>
-        <button onClick={() => navigate('forgot-password')}>Forgot password?</button>
-      </div>
 
       {error && <p className="error">{error}</p>}
     </div>

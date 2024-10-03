@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { db } from './firebaseConfig'; // Import your Firestore database instance
-import { collection, addDoc } from 'firebase/firestore'; // Import Firestore methods
 import './AddEmployee.css';
+import { db } from './firebaseConfig'; // Import Firestore
+import { doc, setDoc } from 'firebase/firestore'; // Import Firestore methods
 
 function AddEmployee({ navigate }) {
   // State variables for storing form input values
@@ -12,7 +12,6 @@ function AddEmployee({ navigate }) {
   const [email, setEmail] = useState(''); // Employee's email address
   const [idNumber, setIdNumber] = useState(''); // Employee's ID number
   const [phoneNumber, setPhoneNumber] = useState(''); // Employee's phone number
-  const [imageFile, setImageFile] = useState(null); // File object for the image
 
   // Function to handle image file selection and preview
   const handleImageChange = (event) => {
@@ -21,7 +20,6 @@ function AddEmployee({ navigate }) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result); // Set the image URL for preview
-        setImageFile(file); // Store the file object
       };
       reader.readAsDataURL(file); // Read the file as a data URL
     }
@@ -52,15 +50,11 @@ function AddEmployee({ navigate }) {
       phoneNumber,
     };
 
-    try {
-      // Add a new document in Firestore under the 'employees' collection
-      await addDoc(collection(db, 'employees'), newEmployee);
-      // Navigate back to the active employees page
-      navigate('active-employees');
-    } catch (error) {
-      console.error('Error adding employee: ', error);
-      alert('Error adding employee, please try again.');
-    }
+    // Add employee to Firestore
+    await setDoc(doc(db, "employees", String(Date.now())), newEmployee); // Use Firestore to save employee
+
+    // Navigate back to the active employees page
+    navigate('active-employees');
   };
 
   // Function to handle navigation back to the active employees page

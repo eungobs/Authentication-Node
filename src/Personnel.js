@@ -1,7 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Personnel.css';
+import { db } from './firebaseConfig'; // Import Firestore
+import { collection, getDocs } from 'firebase/firestore'; // Firestore methods
 
 function Personnel({ navigate }) {
+  // State to store personnel data from Firestore
+  const [firestorePersonnel, setFirestorePersonnel] = useState([]);
+
+  // Fetch personnel data from Firestore on component mount
+  useEffect(() => {
+    const loadPersonnel = async () => {
+      const querySnapshot = await getDocs(collection(db, 'personnel')); // Fetch personnel from Firestore
+      const personnelArray = [];
+      querySnapshot.forEach((doc) => {
+        personnelArray.push({ id: doc.id, ...doc.data() }); // Add each personnel to the array
+      });
+      setFirestorePersonnel(personnelArray); // Update state with personnel data
+    };
+
+    loadPersonnel();
+  }, []); // Empty dependency array ensures this runs only on component mount
+
+  // Function to navigate back to the active employees page
+  const handleBack = () => {
+    navigate('active-employees'); // Navigate to the active employees page
+  };
+
   return (
     <div className="personnel">
       {/* Background video playing in a loop */}
@@ -13,7 +37,7 @@ function Personnel({ navigate }) {
       <div className="content">
         <h2>Company Personnel</h2>
 
-        {/* List of personnel */}
+        {/* Hardcoded personnel list */}
         <div className="personnel-list">
           <div className="person moved">Munny Mpapi (female) - Marketing Director - moved to Pretoria branch - Ref Number: EMP011</div>
           <div className="person terminated">Palane Pilot (male) - Web Designer - Contract Terminated - Ref Number: EMP012</div>
@@ -27,8 +51,20 @@ function Personnel({ navigate }) {
           <div className="person terminated">Anna Nkosi (female) - Technician - Contract Terminated - Ref Number: EMP020</div>
         </div>
 
+        {/* Firestore personnel list */}
+        <div className="personnel-list">
+          {firestorePersonnel.map((person) => (
+            <div
+              key={person.id}
+              className={`person ${person.status === 'moved' ? 'moved' : 'terminated'}`}
+            >
+              {person.name} ({person.gender}) - {person.position} - {person.status === 'moved' ? `moved to ${person.branch} branch` : `Contract ${person.status}`} - Ref Number: {person.refNumber}
+            </div>
+          ))}
+        </div>
+
         {/* Back button to navigate to the active employees page */}
-        <button onClick={() => navigate('active-employees')}>Back</button>
+        <button onClick={handleBack}>Back</button>
       </div>
 
       {/* Footer with company policy message */}
