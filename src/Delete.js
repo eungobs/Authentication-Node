@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { db } from './firebaseConfig';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import './Delete.css';
-import { db } from './firebaseConfig'; // Ensure the path to your firebase config is correct
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
 
 function Delete({ navigate, isAdmin, loginAsAdmin }) {
   const [employees, setEmployees] = useState([]);
   const [adminName, setAdminName] = useState('');
 
-  // Fetch employees from Firestore
+  // Fetch employees from Firebase
   useEffect(() => {
     const fetchEmployees = async () => {
-      const employeesCollection = collection(db, 'employees'); // Adjust the collection name
-      const employeeSnapshot = await getDocs(employeesCollection);
-      const employeeList = employeeSnapshot.docs.map(doc => ({
-        id: doc.id, // Use Firestore document ID
-        ...doc.data(),
-      }));
-      setEmployees(employeeList);
+      try {
+        const employeesCollection = collection(db, 'employees');
+        const employeesSnapshot = await getDocs(employeesCollection);
+        const employeesList = employeesSnapshot.docs.map(doc => ({ 
+          id: doc.id, // Use document ID
+          ...doc.data() 
+        }));
+        setEmployees(employeesList);
+      } catch (error) {
+        console.error('Error fetching employees:', error);
+      }
     };
 
     fetchEmployees();
@@ -48,12 +52,15 @@ function Delete({ navigate, isAdmin, loginAsAdmin }) {
 
   const handleDelete = async (employeeId) => {
     try {
-      await deleteDoc(doc(db, 'employees', employeeId)); // Delete employee from Firestore
-      setEmployees(employees.filter(employee => employee.id !== employeeId));
+      await deleteDoc(doc(db, 'employees', employeeId)); // Delete from Firebase
+      const updatedEmployees = employees.filter(employee => employee.id !== employeeId);
+      setEmployees(updatedEmployees);
+      
+      // Notify the active employees page
       alert(`Employee with ID ${employeeId} has been deleted.`);
     } catch (error) {
       console.error('Error deleting employee:', error);
-      alert('Failed to delete employee. Please try again later.');
+      alert('Error deleting employee. Please try again later.');
     }
   };
 
@@ -63,7 +70,6 @@ function Delete({ navigate, isAdmin, loginAsAdmin }) {
       <div className="employee-list">
         {employees.map(employee => (
           <div key={employee.id} className="employee-card">
-            <img src={employee.imageUrl} alt={employee.name} /> {/* Assuming you have an image URL in the employee data */}
             <h3>{employee.name}</h3>
             <p>{employee.position}</p>
             <p>{employee.refNumber}</p>
