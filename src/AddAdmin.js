@@ -1,21 +1,55 @@
-// src/AddAdmin.js
-import React, { useState } from 'react';
-import { db } from './firebaseConfig'; // Import your Firebase configuration
+import React, { useState, useEffect } from 'react';
+import { db } from './firebaseConfig';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import './AddAdmin.css';
 
 const AddAdmin = () => {
     const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [role, setRole] = useState('admin'); // Default role is admin
+    const [surname, setSurname] = useState('');
+    const [idNumber, setIdNumber] = useState('');
+    const [age, setAge] = useState('');
+    const [role, setRole] = useState('admin');
+    const [image, setImage] = useState(null);
+    const [admins, setAdmins] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const loadAdmins = async () => {
+            const adminSnapshot = await getDocs(collection(db, "admins"));
+            const adminsArray = [];
+            adminSnapshot.forEach((doc) => {
+                adminsArray.push({ id: doc.id, ...doc.data() });
+            });
+            setAdmins(adminsArray);
+        };
+
+        loadAdmins();
+    }, []);
 
     const handleAddAdmin = async (e) => {
         e.preventDefault();
         try {
-            const newAdmin = { name, email, role };
-            // Store the new admin in Firestore
-            await db.collection('admins').add(newAdmin);
+            let imageUrl = '';
+            if (image) {
+                const storage = getStorage();
+                const imageRef = ref(storage, `admins/${image.name}`);
+                await uploadBytes(imageRef, image);
+                imageUrl = await getDownloadURL(imageRef);
+            }
+
+            const newAdmin = { name, surname, idNumber, age, role, imageUrl };
+            const docRef = await addDoc(collection(db, "admins"), newAdmin);
+            setAdmins((prev) => [...prev, { id: docRef.id, ...newAdmin }]);
+
             alert('Admin added successfully!');
             setName('');
-            setEmail('');
+            setSurname('');
+            setIdNumber('');
+            setAge('');
+            setRole('admin');
+            setImage(null);
         } catch (error) {
             console.error("Error adding admin: ", error);
             alert('Failed to add admin.');
@@ -23,26 +57,24 @@ const AddAdmin = () => {
     };
 
     return (
-        <div>
+        <div className="admin-container">
             <h2>Add Admin</h2>
-            <form onSubmit={handleAddAdmin}>
+            <form onSubmit={handleAddAdmin} className="small-form">
                 <div>
                     <label>Name:</label>
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
                 </div>
                 <div>
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
+                    <label>Surname:</label>
+                    <input type="text" value={surname} onChange={(e) => setSurname(e.target.value)} required />
+                </div>
+                <div>
+                    <label>ID Number:</label>
+                    <input type="text" value={idNumber} onChange={(e) => setIdNumber(e.target.value)} required />
+                </div>
+                <div>
+                    <label>Age:</label>
+                    <input type="number" value={age} onChange={(e) => setAge(e.target.value)} required />
                 </div>
                 <div>
                     <label>Role:</label>
@@ -51,8 +83,34 @@ const AddAdmin = () => {
                         <option value="sysadmin">Sysadmin</option>
                     </select>
                 </div>
+                <div>
+                    <label>Upload Picture:</label>
+                    <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} />
+                </div>
                 <button type="submit">Add Admin</button>
             </form>
+
+            <h2>Admin List</h2>
+            <div className="admin-list small-admin-list">
+                {admins.length > 0 ? (
+                    admins.map((admin) => (
+                        <div key={admin.id} className="admin-card small-admin-card">
+                            <img src={admin.imageUrl || 'default-image-url-here'} alt={`${admin.name} ${admin.surname}`} />
+                            <h3>{`${admin.name} ${admin.surname}`}</h3>
+                            <p>ID Number: {admin.idNumber || 'N/A'}</p>
+                            <p>Age: {admin.age || 'N/A'}</p>
+                            <p>Role: {admin.role || 'N/A'}</p>
+                        </div>
+                    ))
+                ) : (
+                    <p>No admins found.</p>
+                )}
+            </div>
+
+            <div className="navigation-buttons">
+                <button onClick={() => navigate('/adminp-rofile')}>Admin Profile</button>
+                <button onClick={() => navigate('/activeemployees')}>Active Employee</button>
+            </div>
         </div>
     );
 };
