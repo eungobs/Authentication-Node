@@ -39,6 +39,16 @@ function ActiveEmployees({ navigate }) {
     navigate('edit-profile', { employeeId });
   };
 
+  // Handler function to navigate to the add admin page
+  const handleAddAdmin = () => {
+    navigate('add-admin'); // Navigate to the add admin page
+  };
+
+  // Handler function to navigate to the admin profile page
+  const handleAdminProfile = () => {
+    navigate('admin-profile'); // Navigate to the admin profile page
+  };
+
   // Filter employees based on the search query
   const filteredEmployees = employees.filter((employee) =>
     employee.idNumber?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -48,9 +58,11 @@ function ActiveEmployees({ navigate }) {
     <div className="active-employees">
       {/* Header section with navigation buttons */}
       <header>
-        <button onClick={() => navigate('add-employee')}>Add</button> {/* Navigate to the add employee page */}
+        <button onClick={() => navigate('add-employee')}>Add Employee</button> {/* Navigate to the add employee page */}
         <button onClick={handleDelete}>Delete</button> {/* Navigate to the delete page */}
         <button onClick={() => navigate('personnel')}>Personnel</button> {/* Navigate to the personnel page */}
+        <button onClick={handleAddAdmin}>Add Admin</button> {/* Navigate to the add admin page */}
+        <button onClick={handleAdminProfile}>Admin Profile</button> {/* Navigate to the admin profile page */}
         <button onClick={handleLogout}>Logout</button> {/* Log out and navigate to the login page */}
       </header>
 
