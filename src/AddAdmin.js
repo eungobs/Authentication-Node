@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { db } from './firebaseConfig';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
 import './AddAdmin.css';
 
-const AddAdmin = () => {
+const AddAdmin = ({ navigate }) => {  // Accept navigate prop from App.js
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [idNumber, setIdNumber] = useState('');
@@ -13,7 +12,6 @@ const AddAdmin = () => {
     const [role, setRole] = useState('admin');
     const [image, setImage] = useState(null);
     const [admins, setAdmins] = useState([]);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const loadAdmins = async () => {
@@ -108,8 +106,9 @@ const AddAdmin = () => {
             </div>
 
             <div className="navigation-buttons">
-                <button onClick={() => navigate('/adminp-rofile')}>Admin Profile</button>
-                <button onClick={() => navigate('/activeemployees')}>Active Employee</button>
+                {/* Updated buttons to use the passed navigate prop */}
+                <button onClick={() => navigate('admin-profile')}>Admin Profile</button>
+                <button onClick={() => navigate('active-employees')}>Active Employees</button>
             </div>
         </div>
     );

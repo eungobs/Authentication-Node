@@ -1,10 +1,9 @@
-// src/AdminProfile.js
 import React, { useState, useEffect } from 'react';
 import { db } from './firebaseConfig'; // Firebase configuration
 import { collection, getDocs } from 'firebase/firestore'; // Firestore methods
 import './AdminProfile.css';
 
-const AdminProfile = () => {
+const AdminProfile = ({ navigate }) => {
     const [admins, setAdmins] = useState([]); // State to hold the list of admins
 
     // Fetch admins from Firestore when the component mounts
@@ -21,9 +20,20 @@ const AdminProfile = () => {
         loadAdmins(); // Call the function when the component mounts
     }, []); // Empty dependency array ensures this runs only on component mount
 
+    // Handle logout functionality (navigating to the login page)
+    const handleLogout = () => {
+        navigate('login'); // Navigate to the login page
+    };
+
+    // Handle going back to the Active Employees page
+    const handleBack = () => {
+        navigate('active-employees'); // Navigate to the Active Employees page
+    };
+
     return (
         <div>
             <h2>Admin Profile</h2>
+            
             {/* Display the admin details */}
             <div className="admin-list">
                 {admins.length > 0 ? (
@@ -43,6 +53,12 @@ const AdminProfile = () => {
                 ) : (
                     <p>No admins found.</p>
                 )}
+            </div>
+
+            {/* Back and Logout buttons */}
+            <div className="admin-actions">
+                <button onClick={handleBack}>Back to Active Employees</button>
+                <button onClick={handleLogout}>Logout</button>
             </div>
         </div>
     );
