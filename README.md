@@ -1,48 +1,50 @@
 ![Untitled (9)](https://github.com/user-attachments/assets/263d67f2-edf4-4bce-9ded-83693d178d25)
 
-# Teekga ELECTRICAL Company Registration App
-
-## Project Overview
+Teekga ELECTRICAL Company Registration App
+Project Overview
 The Teekga ELECTRICAL Company Registration App is designed to efficiently manage employee records. This application allows the admin to securely log in and perform CRUD (Create, Read, Update, Delete) operations on employee data. It also provides insights into the status of employees, including active employees, deactivated employees, and those who have transferred to other company branches.
 
-## Features
-- **Admin Access Only:** Only the admin can log in to the app and perform actions like adding, updating, and deleting employee records. To delete an employee, log in using the admin credentials:
-  - **Username:** elizabeth.ndzukule@gmail.com
-  - **Password:** 000000
+Features
+Admin Access Only: Only the admin can log in to the app and perform actions like adding, updating, and deleting employee records. The roles are defined as follows:
 
-- **Employee Status:** View employees by their status, including active employees, deactivated employees, and those who have moved to other branches.
+Super Admin:
+Username: elizabeth.ndzukule@gmail.com
+Password: 000000
+Can add other admins and manage their rights and access to any pages in the app, except for the delete and block pages.
+Admin Users:
+Username: kgaogelomahajane@gmail.com
+Password: 111111
+Username: elizabe@gmail.com
+Password: 222222
+Admins can manage employee data but do not have access to delete or block users.
+Employee Status: View employees by their status, including active employees, deactivated employees, and those who have moved to other branches.
 
-- **Responsive Design:** The app is fully responsive and works seamlessly across all devices, ensuring an optimal user experience on both desktops and mobile devices.
+Responsive Design: The app is fully responsive and works seamlessly across all devices, ensuring an optimal user experience on both desktops and mobile devices.
 
-- **Built-in Security:** The app has been developed with a focus on security to ensure safe access and management of employee data.
+Built-in Security: The app has been developed with a focus on security to ensure safe access and management of employee data.
 
-## Technologies Used
-- **React.js:** A JavaScript library for building user interfaces and handling state management.
-- **Node.js:** Used for the backend server to handle requests and manage data.
-- **Firebase:** Utilized for user authentication and data storage.
-- **JavaScript:** For handling the core application logic and interactivity.
-- **CSS:** To ensure a modern and responsive design for the app.
-
-## Installation and Setup
+Technologies Used
+React.js: A JavaScript library for building user interfaces and handling state management.
+Node.js: Used for the backend server to handle requests and manage data.
+Firebase: Utilized for user authentication and data storage.
+JavaScript: For handling the core application logic and interactivity.
+CSS: To ensure a modern and responsive design for the app.
+Installation and Setup
 To set up the project, follow these steps:
 
-1. **Clone the repository:**
-   
-   git clone <repository-url>
-   cd employee-registration
+Clone the repository:
 
-   Install the frontend dependencies:
-
+git clone https://github.com/eungobs/EmployeeRegistration-Node-Firebase.git
+cd EmployeeRegistration-Node-Firebase
+Install the frontend dependencies:
 
 npm install
 Set up the backend:
-
 Navigate to the backend directory and run:
 
 npm install
 npm start
 Open the app in your browser at http://localhost:3000.
-
 How to Use
 Landing Page:
 On the landing page, click the Admin button to register as a new admin.
@@ -63,7 +65,7 @@ Employee Cards:
 
 Each card represents an individual employee with their details.
 Edit Button: This button is embedded within each employee's card, allowing users to edit the details specific to that employee.
-To delete an employee, log in using the credentials: elizabeth ndzukule. Click the Delete button and confirm the action.
+To delete an employee, log in using the super admin credentials: elizabeth.ndzukule@gmail.com. Click the Delete button and confirm the action.
 Author
 Elizabeth Eunice Ndzukule
 This project was completed in 5 days, demonstrating rapid development and deployment capabilities. The app was developed using VSCode, and the initial sketches of the app were created using Figma. Screenshots of the app can be found in the public folder.

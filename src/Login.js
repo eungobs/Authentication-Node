@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Login.css';
-import { auth } from './firebaseConfig'; // Ensure the path is correct
+import { auth } from './firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth'; // Import Firebase authentication methods
 
 function Login({ navigate }) {
@@ -9,7 +9,17 @@ function Login({ navigate }) {
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
-    if (username === 'elizabeth.ndzukule@gmail.com' && password === '000000') {
+    const adminCredentials = [
+      { email: 'elizabeth.ndzukule@gmail.com', password: '000000' }, // Super Admin
+      { email: 'kaogelomahajane@gmail.com', password: '111111' }, // Admin 1
+      { email: 'elizabe@gmail.com', password: '222222' }, // Admin 2
+    ];
+
+    const isAdmin = adminCredentials.some(
+      (admin) => admin.email === username && admin.password === password
+    );
+
+    if (isAdmin) {
       try {
         // Use Firebase to sign in
         await signInWithEmailAndPassword(auth, username, password);
@@ -48,4 +58,5 @@ function Login({ navigate }) {
 }
 
 export default Login;
+
 

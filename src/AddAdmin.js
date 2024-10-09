@@ -15,6 +15,14 @@ const AddAdmin = ({ navigate }) => {
     const [admins, setAdmins] = useState([]);
     const [blockedAdmins, setBlockedAdmins] = useState(new Set());
 
+    // Load blocked admins from localStorage on initial load
+    useEffect(() => {
+        const storedBlockedAdmins = localStorage.getItem('blockedAdmins');
+        if (storedBlockedAdmins) {
+            setBlockedAdmins(new Set(JSON.parse(storedBlockedAdmins)));
+        }
+    }, []);
+
     // Load admins from Firestore
     useEffect(() => {
         const loadAdmins = async () => {
@@ -60,13 +68,16 @@ const AddAdmin = ({ navigate }) => {
 
     // Handle blocking an admin
     const handleBlockAdmin = async (adminId) => {
-        // Prompt for email and password
-        const email = prompt('Please enter your email to block this admin:');
-        const password = prompt('Please enter your password to block this admin:');
+        const enteredEmail = prompt('Please enter your email to block this admin:');
+        const enteredPassword = prompt('Please enter your password to block this admin:');
         
-        // Check credentials
-        if (email === 'elizabeth.ndzukule@gmail.com' && password === '000000') {
-            setBlockedAdmins((prev) => new Set(prev.add(adminId))); // Add admin to blocked set
+        if (enteredEmail === 'elizabeth.ndzukule@gmail.com' && enteredPassword === '000000') {
+            const updatedBlockedAdmins = new Set([...blockedAdmins, adminId]);
+            setBlockedAdmins(updatedBlockedAdmins);
+
+            // Persist blocked admins to localStorage
+            localStorage.setItem('blockedAdmins', JSON.stringify([...updatedBlockedAdmins]));
+
             alert('Admin blocked successfully!');
         } else {
             alert('Incorrect email or password. Please try again.');
@@ -156,7 +167,6 @@ const AddAdmin = ({ navigate }) => {
             </div>
 
             <div className="navigation-buttons">
-                {/* Navigation buttons using navigate prop */}
                 <button onClick={() => navigate('admin-profile')}>Admin Profile</button>
                 <button onClick={() => navigate('active-employees')}>Active Employees</button>
             </div>
@@ -165,3 +175,5 @@ const AddAdmin = ({ navigate }) => {
 };
 
 export default AddAdmin;
+
+
